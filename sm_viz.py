@@ -96,7 +96,7 @@ with modelTesting:
 		data_to_plot = df_vars[df_vars['Sensor']==sensor].reset_index(drop=True)
 		fig = px.bar(data_to_plot, x="Date", y="value",
 	             color='Variance', barmode='group',
-	             height=500, width = 1300, title = sensor)
+	             height=500, width = 1100, title = sensor)
 		st.plotly_chart(fig)
 	
 
