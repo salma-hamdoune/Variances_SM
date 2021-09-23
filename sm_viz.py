@@ -58,7 +58,7 @@ with header:
 # 	st.header('Dataset')
 # 	# st.text('This is the dataset')
 df = get_data('data/all_parts_S1T.csv')
-df_vars = get_data('data/df_vars1.csv')
+df_vars = get_data('data/df_vars1_dates.csv')
 
 # 	st.write(df.head())
 	# st.subheader("Values distributions of MEDV variable")
@@ -67,58 +67,77 @@ df_vars = get_data('data/df_vars1.csv')
 	# # # pd.DataFrame(df['MEDV'].value_counts())
 	# st.bar_chart(medv_dist)
 
-
+def _max_width_():
+    max_width_str = f"max-width: 10000px;"
+    st.markdown(
+        f"""
+    <style>
+    .reportview-container .main .block-container{{
+        {max_width_str}
+    }}
+    </style>    
+    """,
+        unsafe_allow_html=True,
+    )
 
 # with features:
 # 	st.header('Features')
 sensors = df['Sensor'].unique()
-
+_max_width_()
 with modelTesting:
 	st.header("Variances by sensors")
-	st.subheader('For each sensor, the values of soil moisture are aggregated by mean either on days, 12 hours, 8 hours or 6 hours. Then the variance of the resuted values is calculated')
-	fig = px.bar(df_vars, x="Sensor", y="value",
-             color='Variance', barmode='group',
-             height=400)
-	st.plotly_chart(fig)
+	st.subheader('For each sensor, the variance of daily Soil Moisture values is plotted for different cases: ')
+	st.subheader('1) Daily variance: the variance of hourly values for each day ')
+	st.subheader('2) 12 Hours variance: the variance of 2 values each day ')
+	st.subheader('3) 8 Hours variance: the variance of 3 values each day ')
+	st.subheader('4) 6 Hours variance: the variance of 4 values each day ')
 
-with modelTraining:
-	st.header('Boxplots by sensors')
-	# sensors = df['Sensor'].unique()
-	# for sensor in sensors:
-	# 	df_ = df[df['Sensor']== sensor].reset_index(drop=True)
-	# 	plot = px.box(df_, x="Date", y="S1T", color = "partofday_12", title=sensor)
-	# 	st.plotly_chart(plot)
+	for sensor in sensors:
+		data_to_plot = df_vars[df_vars['Sensor']==sensor].reset_index(drop=True)
+		fig = px.bar(data_to_plot, x="Date", y="value",
+	             color='Variance', barmode='group',
+	             height=500, width = 1500, title = sensor)
+		st.plotly_chart(fig)
 	
-	select_variable = st.selectbox('Aggregation by:', options=["Daily", "12 hours", "8 hours", "6 hours"])
 
-	# twelve_col, eight_col , six_col= st.columns(3)
+# with modelTraining:
+# 	st.header('Boxplots by sensors')
+# 	# sensors = df['Sensor'].unique()
+# 	# for sensor in sensors:
+# 	# 	df_ = df[df['Sensor']== sensor].reset_index(drop=True)
+# 	# 	plot = px.box(df_, x="Date", y="S1T", color = "partofday_12", title=sensor)
+# 	# 	st.plotly_chart(plot)
+	
+# 	select_variable = st.selectbox('Aggregation by:', options=["Daily", "12 hours", "8 hours", "6 hours"])
 
-	# twelve_col.header('partofday_12')
-	# with twelve_col:
+# 	# twelve_col, eight_col , six_col= st.columns(3)
 
-	if select_variable == "12 hours":
-		for sensor in sensors:
-			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
-			plot = px.box(df_, x="Date", y="S1T", color = "partofday_12", title=sensor)
-			st.plotly_chart(plot)
+# 	# twelve_col.header('partofday_12')
+# 	# with twelve_col:
 
-	elif select_variable == "8 hours":
-		for sensor in sensors:
-			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
-			plot = px.box(df_, x="Date", y="S1T", color = "partofday_8", title=sensor)
-			st.plotly_chart(plot)
+# 	if select_variable == "12 hours":
+# 		for sensor in sensors:
+# 			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
+# 			plot = px.box(df_, x="Date", y="S1T", color = "partofday_12", title=sensor)
+# 			st.plotly_chart(plot)
 
-	elif select_variable == "6 hours":
-		for sensor in sensors:
-			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
-			plot = px.box(df_, x="Date", y="S1T", color = "partofday_6", title=sensor)
-			st.plotly_chart(plot)
+# 	elif select_variable == "8 hours":
+# 		for sensor in sensors:
+# 			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
+# 			plot = px.box(df_, x="Date", y="S1T", color = "partofday_8", title=sensor)
+# 			st.plotly_chart(plot)
 
-	elif select_variable == "Daily":
-		for sensor in sensors:
-			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
-			plot = px.box(df_, x="Date", y="S1T", title=sensor)
-			st.plotly_chart(plot)
+# 	elif select_variable == "6 hours":
+# 		for sensor in sensors:
+# 			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
+# 			plot = px.box(df_, x="Date", y="S1T", color = "partofday_6", title=sensor)
+# 			st.plotly_chart(plot)
+
+# 	elif select_variable == "Daily":
+# 		for sensor in sensors:
+# 			df_ = df[df['Sensor']== sensor].reset_index(drop=True)
+# 			plot = px.box(df_, x="Date", y="S1T", title=sensor)
+# 			st.plotly_chart(plot)
 
 
 
